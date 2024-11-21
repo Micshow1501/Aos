@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+int main() 
+{
+	int pipe_fd[2];
+	if (pipe(pipe_fd) == -1) 
+	{
+		perror("Pipe creation failed");
+		exit(EXIT_FAILURE);
+	}
+	pid_t pid = fork();
+	if (pid < 0) 
+	{
+		perror("Fork failed");
+		exit(EXIT_FAILURE);
+	} 
+	else if (pid == 0) 
+	{ 
+		// Child process
+		close(pipe_fd[0]); // Close reading end of pipe in child
+		dup2(pipe_fd[1], STDOUT_FILENO); // Redirect stdout to pipe write end
+		// Execute ls -l command
+		execlp("ls", "ls", "-l", NULL);
+		// execlp will not return unless there's an error
+		perror("exec ls -l failed");
+		exit(EXIT_FAILURE);
+	} 
+	else 
+	{ 
+		// Parent process
+		close(pipe_fd[1]); // Close writing end of pipe in parent
+		dup2(pipe_fd[0], STDIN_FILENO); // Redirect stdin to pipe read end
+		// Execute wc -l command
+		execlp("wc", "wc", "-l", NULL);
+		// execlp will not return unless there's an error
+		perror("exec wc -l failed");
+		exit(EXIT_FAILURE);
+	}
+	return 0;
+}
