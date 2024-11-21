@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+int main() 
+{
+	int file_descriptor;
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // File permissions
+	// Open file for writing (creating if it doesn't exist)
+	file_descriptor = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, mode);
+	if (file_descriptor < 0) 
+	{
+		perror("Error opening file");
+		return 1;
+	}
+	// Redirect standard output to the file
+	if (dup2(file_descriptor, STDOUT_FILENO) == -1) 
+	{
+		perror("Error redirecting output");
+		return 1;
+	}
+	// Close the file descriptor
+	close(file_descriptor);
+	// Printing to stdout (redirected to file)
+	printf("This output is redirected to a file using dup and open system calls.\n");
+	return 0;
+}
