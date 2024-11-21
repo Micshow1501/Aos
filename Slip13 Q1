@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+void sig_handler(int signo)
+{
+	if (signo == SIGUSR1) 
+	{
+		printf("Received SIGUSR1 - Suspending the process\n");
+		raise(SIGSTOP); // Suspend the process
+	} 
+	else if (signo == SIGUSR2) 
+	{
+		printf("Received SIGUSR2 - Resuming the process\n");
+	}
+}
+	
+int main() 
+{
+	if (signal(SIGUSR1, sig_handler) == SIG_ERR || signal(SIGUSR2, sig_handler) == SIG_ERR) 
+	{
+		perror("Signal setup failed");
+		return EXIT_FAILURE;
+	}
+	printf("Waiting for signals...\n");
+	while (1) 
+	{
+		sleep(1); // Continuously wait for signals
+	}
+	return 0;
+}
