@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#define MSG_SIZE 100
+int main() 
+{
+	int pipe_fd[2];
+	pid_t pid;
+	char message[MSG_SIZE] = "Hello from parent!";
+	if (pipe(pipe_fd) == -1) 
+	{
+		perror("Pipe creation failed");
+		exit(EXIT_FAILURE);
+	}
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("Fork failed");
+		exit(EXIT_FAILURE);
+	} 
+	else if (pid == 0) 
+	{ 
+		// Child process
+		close(pipe_fd[1]); // Close writing end of pipe in child
+		char buffer[MSG_SIZE];
+		read(pipe_fd[0], buffer, MSG_SIZE);
+		printf("Child received: %s\n", buffer);
+		close(pipe_fd[0]); // Close reading end of pipe in child
+	} 
+	else 
+	{ 
+		// Parent process
+		close(pipe_fd[0]); // Close reading end of pipe in parent
+		write(pipe_fd[1], message, sizeof(message));
+		close(pipe_fd[1]); // Close writing end of pipe in parent
+	}
+	return 0;
+}
