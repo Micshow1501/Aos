@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <time.h>
+int main() 
+{
+	DIR *directory;
+	struct dirent *entry;
+	struct stat fileStat;
+	time_t now = time(NULL);
+	struct tm *current_time = localtime(&now);
+	int current_month = current_time->tm_mon + 1; // Month is zero-based in struct tm
+	// Open the current directory
+	directory = opendir(".");
+	if (directory == NULL) 
+	{
+		perror("Unable to open directory");
+		return EXIT_FAILURE;
+	}
+	// Read directory entries and display files created in a specific month
+	printf("Files created in current month (%d):\n", current_month);
+	while ((entry = readdir(directory)) != NULL) 
+	{
+		if (stat(entry->d_name, &fileStat) == 0) 
+		{
+			struct tm *file_time = localtime(&fileStat.st_ctime);
+			int file_month = file_time->tm_mon + 1; // Month is zero-based in struct tm
+			if (file_month == current_month)
+			{
+				printf("%s\n", entry->d_name);
+			}
+		}
+	}
+	closedir(directory);
+	return EXIT_SUCCESS;
+}
