@@ -1,39 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#define MSG_SIZE 100
-int main() 
-{
-	int pipe_fd[2];
-	pid_t pid;
-	char message[MSG_SIZE] = "Hello from parent!";
-	if (pipe(pipe_fd) == -1) 
-	{
-		perror("Pipe creation failed");
-		exit(EXIT_FAILURE);
-	}
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{ 
-		// Child process
-		close(pipe_fd[1]); // Close writing end of pipe in child
-		char buffer[MSG_SIZE];
-		read(pipe_fd[0], buffer, MSG_SIZE);
-		printf("Child received: %s\n", buffer);
-		close(pipe_fd[0]); // Close reading end of pipe in child
-	} 
-	else 
-	{ 
-		// Parent process
-		close(pipe_fd[0]); // Close reading end of pipe in parent
-		write(pipe_fd[1], message, sizeof(message));
-		close(pipe_fd[1]); // Close writing end of pipe in parent
-	}
-	return 0;
-}
+def simple_chatbot(user_input):
+    responses = {
+        "hello": "Hi there! How can I help you?",
+        "how are you": "I'm just a computer program, but I'm doing well. Thanks for asking!",
+        "bye": "Goodbye! Have a great day!",
+        "name": "I'm a chatbot. You can call me ChatGPT.",
+        "default": "I'm not sure how to respond to that. Can you ask me something else?"
+    }
+    user_input_lower = user_input.lower()
+    for key in responses:
+        if key in user_input_lower:
+            return responses[key]
+    return responses["default"]
+if __name__ == "__main__":
+    print("Simple Chatbot: Hello! Type 'bye' to exit.")
+    while True:
+        user_input = input("You: ")
+        if user_nput.lower() == 'bye':
+            print("Simple Chatbot: Goodbye! Have a great day.")
+            break
+        response = simple_chatbot(user_input)
+        print("Simple Chatbot:", response)
