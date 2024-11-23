@@ -1,54 +1,29 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-void child_handler(int signum) 
-{
-	if (signum == SIGCHLD) 
-	{
-		printf("Child process has terminated.\n");
-	}
-}
-void alarm_handler(int signum) 
-{
-	if (signum == SIGALRM) 
-	{
-		printf("Child process exceeded time limit. Killing...\n");
-		kill(getpid(), SIGKILL); // Kill the current process
-	}
-}
-
-int main(int argc, char *argv[]) 
-{
-	if (argc < 2) 
-	{
-		printf("Usage: %s <command>\n", argv[0]);
-		return 1;
-	}
-	signal(SIGCHLD, child_handler);
-	signal(SIGALRM, alarm_handler);
-	pid_t pid = fork();
-	if (pid < 0) 
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{ 
-		// Child process
-		execvp(argv[1], &argv[1]); // Execute the command
-		perror("Execution failed");
-		exit(EXIT_FAILURE);
-	} 
-	else 
-	{ 
-		// Parent process
-		alarm(5); // Set alarm for 5 seconds
-		// Wait for the child process to terminate
-		wait(NULL);
-		alarm(0); // Cancel the alarm
-	}
-	return 0;
-}
+class Node:
+    def __init__(self, name, children=None):
+        self.name = name
+        self.children = children if children else []
+def iterative_deepening_dfs(root, goal):
+    depth = 0
+    while True:
+        result = depth_limited_dfs(root, goal, depth)
+        if result is not None:
+            return result
+        depth += 1
+def depth_limited_dfs(node, goal, depth):
+    return recursive_dls(node, goal, depth)
+def recursive_dls(node, goal, depth):
+    if depth == 0 and node.name == goal:
+        return node.name
+    elif depth > 0:
+        for child in node.children:
+            result = recursive_dls(child, goal, depth - 1)
+            if result is not None:
+                return result
+    return None
+root = Node('A', [Node('B', [Node('D'), Node('E')]), Node('C', [Node('F', [Node('G')])])])
+goal_node = 'G'
+result = iterative_deepening_dfs(root, goal_node)
+if result is not None:
+    print(f"Goal node '{goal_node}' found.")
+else:
+    print(f"Goal node '{goal_node}' not found.")
