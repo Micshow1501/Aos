@@ -1,39 +1,26 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <time.h>
+import calendar
+def generate_calendar():
+    # Get input for month and year
+    year = int(input("Enter the year: "))
+    month = int(input("Enter the month: "))
 
-int main(int argc, char *argv[]) 
-{
-	if (argc != 2) 
-	{
-		printf("Usage: %s <filename>\n", argv[0]);
-		return 1;
-	}
-	struct stat fileStat;
-	if (stat(argv[1], &fileStat) < 0) 
-	{
-		fprintf(stderr, "Error accessing file %s: %s\n", argv[1], strerror(errno));
-		return 1;
-	}
-	printf("File: %s\n", argv[1]);
-	printf("Inode Number: %ld\n", (long)fileStat.st_ino);
-	printf("Number of Hard Links: %ld\n", (long)fileStat.st_nlink);
-	printf("File Permissions: ");
-	printf((S_ISDIR(fileStat.st_mode)) ? "d" : "-");
-	printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
-	printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
-	printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
-	printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
-	printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
-	printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
-	printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
-	printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
-	printf((fileStat.st_mode & S_IXOTH) ? "x\n" : "-\n");
-	printf("File Size: %ld bytes\n", (long)fileStat.st_size);
-	printf("Last Access Time: %s", ctime(&fileStat.st_atime));
-	printf("Last Modification Time: %s", ctime(&fileStat.st_mtime));
-	return 0;
-}
+    # Validate input
+    if 1 <= month <= 12:
+        # Generate and print the calendar
+        cal = calendar.monthcalendar(year, month)
+        month_name = calendar.month_name[month]
+
+        print(f"\nCalendar for {month_name} {year}:\n")
+        print("Mo Tu We Th Fr Sa Su")
+        for week in cal:
+            for day in week:
+                if day == 0:
+                    print("   ", end=" ")
+                else:
+                    print(f"{day:2} ", end=" ")
+            print()
+    else:
+        print("Invalid month. Please enter a month between 1 and 12.")
+if __name__ == "__main__":
+    generate_calendar()
+
