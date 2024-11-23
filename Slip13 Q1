@@ -1,32 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
 
-void sig_handler(int signo)
-{
-	if (signo == SIGUSR1) 
-	{
-		printf("Received SIGUSR1 - Suspending the process\n");
-		raise(SIGSTOP); // Suspend the process
-	} 
-	else if (signo == SIGUSR2) 
-	{
-		printf("Received SIGUSR2 - Resuming the process\n");
-	}
-}
-	
-int main() 
-{
-	if (signal(SIGUSR1, sig_handler) == SIG_ERR || signal(SIGUSR2, sig_handler) == SIG_ERR) 
-	{
-		perror("Signal setup failed");
-		return EXIT_FAILURE;
-	}
-	printf("Waiting for signals...\n");
-	while (1) 
-	{
-		sleep(1); // Continuously wait for signals
-	}
-	return 0;
-}
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 5)
+def evaluate(board):
+    for row in board:
+        if all(cell == 'X' for cell in row):
+            return 10
+        elif all(cell == 'O' for cell in row):
+            return -10
+    for col in range(3):
+        if all(board[row][col] == 'X' for row in range(3)):
+            return 10
+        elif all(board[row][col] == 'O' for row in range(3)):
+            return -10
+    if all(board[i][i] == 'X' for i in range(3)):
+        return 10
+    elif all(board[i][i] == 'O' for i in range(3)):
+        return -10
+    if all(board[i][2 - i] == 'X' for i in range(3)):
+        return 10
+    elif all(board[i][2 - i] == 'O' for i in range(3)):
+        return -10
+    return 0
+def is_moves_left(board):
+    return any(cell == ' ' for row in board for cell in row)
+def mini_max(board, depth, is_maximizing):
+    score = evaluate(board)
+    if score == 10:
+        return score - depth
+    if score == -10:
+        return score + depth
+    if not is_moves_left(board):
+        return 0
+    if is_maximizing:
+        max_eval = float('-inf')
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'X
+
+
