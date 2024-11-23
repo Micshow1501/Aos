@@ -1,40 +1,28 @@
+def dfs(graph, current, goal, visited):
+    if current == goal:
+        print("Goal node found!")
+        return True
+    visited.add(current)
+    for neighbor in graph.get(current, []):
+        if neighbor not in visited:
+            if dfs(graph, neighbor, goal, visited):
+                return True
+   return False
+if __name__ == "__main__":
+   graph = {
+        1: [2, 3],
+        2: [4, 5],
+        3: [6, 7],
+        4: [8],
+        5: [8],
+        6: [8],
+        7: [8],
+        8: []
+    }
+Set initial and goal nodes
+    initial_node = 1
+    goal_node = 8
+visited_nodes = set()
+    if not dfs(graph, initial_node, goal_node, visited_nodes):
+        print("Goal node not found.")
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-void handle_alarm(int signum) 
-{
-	if (signum == SIGALRM) 
-	{
-		printf("Alarm is fired!\n");
-	}
-}
-
-int main() 
-{
-	pid_t pid;
-	signal(SIGALRM, handle_alarm); // Registering the signal handler
-	pid = fork();
-	if (pid < 0) 
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{  	// Child process
-		sleep(2); // Waiting for 2 seconds
-		kill(getppid(), SIGALRM); // Sending SIGALRM signal to the parent
-	} 
-	else 
-	{ 	// Parent process
-		printf("Waiting for alarm...\n");
-		while(1) 
-		{
-			// Parent process waits indefinitely for the signal
-			// The signal handler will execute upon receiving SIGALRM
-		}
-	}	
-	return 0;
-}
