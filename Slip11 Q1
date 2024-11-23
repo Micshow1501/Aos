@@ -1,22 +1,18 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/resource.h>
-int main() 
-{
-	struct rlimit limit;
-	// Get current resource limits for the process (for example, files limit)
-	if (getrlimit(RLIMIT_NOFILE, &limit) == -1) {
-	perror("getrlimit failed");
-	return EXIT_FAILURE;
-	}
-	printf("Current files limit: soft=%ld, hard=%ld\n", limit.rlim_cur, limit.rlim_max);
-	// Modify the resource limit (for example, increase fies limit)
-	limit.rlim_cur = 1000; // Change the soft limit
-	limit.rlim_max = 1500; // Change the hard limit
-	if (setrlimit(RLIMIT_NOFILE, &limit) == -1) {
-	perror("setrlimit failed");
-	return EXIT_FAILURE;
-	}
-	printf("New files limit: soft=%ld, hard=%ld\n", limit.rlim_cur, limit.rlim_max);
-	return EXIT_SUCCESS;
-}
+def mean_end_analysis(start, goal):
+    current_state = list(start)
+    goal_state = list(goal)
+    steps = 0
+    while current_state != goal_state:
+        for i in range(len(current_state)):
+            if current_state[i] != goal_state[i]:
+                print(f"Change character at position {i + 1} from '{current_state[i]}' to '{goal_state[i]}'")
+                current_state[i] = goal_state[i]
+        steps += 1
+    print(f"Transformation completed in {steps} steps.")
+if __name__ == "__main__":
+    start_string = input("Enter the starting string: ").lower()
+    goal_string = input("Enter the goal string: ").lower()
+    if len(start_string) != len(goal_string):
+        print("Strings must be of the same length.")
+    else:
+        mean_end_analysis(start_string, goal_string)
