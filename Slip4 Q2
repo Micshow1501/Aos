@@ -1,68 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-int kill_child = 0;
-void child_handler(int signum) 
-{
-	if (signum == SIGHUP) 
-	{
-		printf("Child received SIGHUP from parent.\n");
-	} 
-	else if (signum == SIGINT) 
-	{
-		printf("Child received SIGINT from parent.\n");
-	} 
-	else if (signum == SIGQUIT) 
-	{
-		printf("My Papa has Killed me!!!\n");
-		exit(EXIT_SUCCESS);
-	}
-}
-int main() 
-{
-	pid_t pid = fork();
-	if (pid < 0) 
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{ 	// Child process
-		signal(SIGHUP, child_handler);
-		signal(SIGINT, child_handler);
-		signal(SIGQUIT, child_handler);
-		while(1) 
-		{
-			// Child process continues running and handling signals
-		}
-	} 
-	else 
-	{
-		 // Parent process
-		int counter = 0;
-		while (counter < 5) 
-		{ 
-			// Sending signals for 15 seconds (5 * 3 seconds)
-			sleep(3);
-			if (!kill_child) 
-			{
-				kill(pid, SIGHUP); // Send SIGHUP signal
-			}	 
-			else 
-			{
-				kill(pid, SIGINT); // Send SIGINT signal
-			}
-			counter++;
-			if (counter == 5) 
-			{
-				kill(pid, SIGQUIT); // Send SIGQUIT signal after 15 seconds
-			}
-			kill_child = !kill_child;
-		}
-		wait(NULL); // Wait for child to terminate
-	}
-	return 0;
-}
+from collections import deque
+class Graph:
+    def __init__(self):
+        self.graph = {}
+    def add_edge(self, node, neighbor):
+        if node not in self.graph:
+            self.graph[node] = []
+       self.graph[node].append(neighbor)
+def bfs(graph, start, goal):
+    visited = set()
+    queue = deque([[start]])
+  while queue:
+        path = queue.popleft()
+        node = path[-1]
+        if node in visited:
+            continue
+        neighbors = graph[node]
+        for neighbor in neighbors:
+            new_path = list(path)
+            new_path.append(neighbor)
+            queue.append(new_path)
+            if neighbor == goal:
+                return new_path
+        visited.add(node)
+    return None
+graph = Graph()
+graph.add_edge(1, 2)
+graph.add_edge(1, 3)
+graph.add_edge(2, 4)
+graph.add_edge(2, 5)
+graph.add_edge(3, 6)
+graph.add_edge(3, 7)
+graph.add_edge(4, 8)
+graph.add_edge(5, 8)
+initial_node = 1
+goal_node = 8
+result_path = bfs(graph.graph, initial_node, goal_node)
+if result_path:
+    print(f"BFS Path from {initial_node} to {goal_node}: {result_path}")
+else:
+    print(f"No path found from {initial_node} to {goal_node}")
+
+
