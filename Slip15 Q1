@@ -1,35 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
+class MonkeyBananaProblem:
+    def __init__(self, grid):
+        self.grid = grid
+        self.monkey_pos = self.find_char('M')
+        self.banana_pos = self.find_char('B')
+    def find_char(self, char):
+        for i, row in enumerate(self.grid):
+            for j, cell in enumerate(row):
+                if cell == char:
+                    return (i, j)
+        return None
+    def move(self, direction):
+        moves = {'UP': (-1, 0), 'DOWN': (1, 0), 'LEFT': (0, -1), 'RIGHT': (0, 1)}
+        if direction in moves:
+            move = moves[direction]
+            new_pos = (self.monkey_pos[0] + move[0], self.monkey_pos[1] + move[1])
+            if 0 <= new_pos[0] < len(self.grid) and 0 <= new_pos[1] < len(self.grid[0]):
+                self.monkey_pos = new_pos
+                if self.monkey_pos == self.banana_pos:
+                    print("Monkey reached the banana!")
+                    return True
+                else:
+                    print(f"Monkey moved {direction}")
+            else:
+                print("Invalid move! Monkey hit the wall.")
+        else:
+            print("Invalid move! Please use UP, DOWN, LEFT, or RIGHT.")
+        return False
+monkey_problem = MonkeyBananaProblem(grid_example)
+while not monkey_problem.move(input("Enter move direction (UP, DOWN, LEFT, RIGHT): ").upper()):
+    pass
 
-int main() 
-{
-	long n;
-	printf("Enter the size in bytes: ");
-	scanf("%ld", &n);
-	DIR *dir;
-	struct dirent *entry;
-	struct stat fileStat;
-	if ((dir = opendir(".")) == NULL) 
-	{
-		perror("opendir() failed");
-		return 1;
-	}
-	printf("Files with size greater than %ld bytes:\n", n);
-	while ((entry = readdir(dir)) != NULL) 
-	{
-		if (stat(entry->d_name, &fileStat) == -1) 
-		{
-			perror("stat");
-			return 1;
-		}
-		if (S_ISREG(fileStat.st_mode) && fileStat.st_size > n) 
-		{
-			printf("%s\n", entry->d_name);
-		}
-	}
-	closedir(dir);
-	return 0;
-}
