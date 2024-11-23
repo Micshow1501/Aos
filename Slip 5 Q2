@@ -1,34 +1,32 @@
-#include<stdio.h>
-#include<unistd.h>
-int main() 
-{
-	int pipefds[2];
-	int returnstatus;
-	char writemessages[3][20]={"Hello World", "Hello SPPU","Linux is Funny"};
-	char readmessage[20];
-	returnstatus = pipe(pipefds);
-	if (returnstatus == -1) 
-	{
-		printf("Unable to create pipe\n");
-		return 1;
-	}
-	int child = fork();
-	if(child==0)
-	{
-		printf("Child is Writing to pipe - Message 1 is %s\n", writemessages[0]);
-		write(pipefds[1], writemessages[0], sizeof(writemessages[0]));
-		printf("Child is Writing to pipe - Message 2 is %s\n", writemessages[1]);
-		write(pipefds[1], writemessages[1], sizeof(writemessages[1]));
-		printf("Child is Writing to pipe - Message 3 is %s\n", writemessages[2]);
-		write(pipefds[1], writemessages[2], sizeof(writemessages[2]));
-	}
-	else
-	{
-		read(pipefds[0], readmessage, sizeof(readmessage));
-		printf("Parent Process is Reading from pipe – Message 1 is %s\n", readmessage);
-		read(pipefds[0], readmessage, sizeof(readmessage));
-		printf("Parent Process is Reading from pipe – Message 2 is %s\n", readmessage);
-		read(pipefds[0], readmessage, sizeof(readmessage));
-		printf("Parent Process is Reading from pipe – Message 3 is %s\n", readmessage);
-	}
-}
+from collections import deque
+def bfs(graph, start, goal):
+    visited = set()
+    queue = deque([(start, [start])])
+    while queue:
+        current_node, path = queue.popleft()
+        if current_node == goal:
+            return path
+ if current_node not in visited:
+            visited.add(current_node)
+for neighbor in graph.get(current_node, []):
+                if neighbor not in visited:
+                    queue.append((neighbor, path + [neighbor]))
+ return None
+if __name__ == "__main__":
+    graph = {
+        1: [2, 3],
+        2: [1, 4, 5],
+        3: [1, 6, 7],
+        4: [2, 8],
+        5: [2, 8],
+        6: [3, 8],
+        7: [3, 8],
+        8: [4, 5, 6, 7]
+    }
+    initial_node = 1
+    goal_node = 8
+    path = bfs(graph, initial_node, goal_node)
+    if path:
+        print(f"Shortest path from {initial_node} to {goal_node}: {path}")
+    else:
+        print(f"No path from {initial_node} to {goal_node}")
