@@ -1,61 +1,31 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#define MAX_FILES 50
-#define MAX_FILENAME_LENGTH 100
-
-// Structure to hold file information
-struct FileInfo {
-	char filename[MAX_FILENAME_LENGTH];
-	off_t size;
-};
-
-// Comparator function for qsort
-int compare(const void *a, const void *b) 
-{
-	return ((struct FileInfo *)a)->size - ((struct FileInfo *)b)->size;
-}
-int main(int argc, char *argv[]) 
-{
-	int i;
-	if (argc < 2) 
-	{
-		printf("Usage: %s <file1> <file2> ... <fileN>\n", argv[0]);
-		return 1;
-	}
-	struct FileInfo files[MAX_FILES];
-	int num_files = argc - 1;
-	if (num_files > MAX_FILES) 
-	{
-		printf("Exceeded maximum number of files (%d)\n", MAX_FILES);
-		return 1;
-	}
-
-	// Get file sizes
-	for (i = 0; i < num_files; ++i) 
-	{
-		struct stat fileStat;
-		if (stat(argv[i + 1], &fileStat) == -1) 
-		{
-			perror("stat");
-			return 1;
-		}
-		strncpy(files[i].filename, argv[i + 1], MAX_FILENAME_LENGTH - 1);
-		files[i].filename[MAX_FILENAME_LENGTH - 1] = '\0';
-		files[i].size = fileStat.st_size;
-	}
-
-	// Sort files based on size
-	qsort(files, num_files, sizeof(struct FileInfo), compare);
-	// Display filenames in ascending order of their sizes
-	printf("Files sorted by size (ascending order):\n");
-	for ( i = 0; i < num_files; ++i) 
-	{
-		printf("%s - %lld bytes\n", files[i].filename, (long long)files[i].size);
-	}
-	return 0;
-}
+def is_safe(board, row, col):
+    if any(board[row]):
+        return False
+    if any(board[i][col] for i in range(len(board))):
+        return False
+    if any(board[i][j] for i, j in zip(range(row, -1, -1), range(col, -1, -1))):
+        return False
+if any(board[i][j] for i, j in zip(range(row, -1, -1), range(col, len(board)))):
+        return False
+    return True
+def solve_n_queens(board, row):
+    if row == len(board):
+        return True  
+    for col in range(len(board)):
+        if is_safe(board, row, col):
+            board[row][col] = 1
+            if solve_n_queens(board, row + 1):
+                return True 
+            board[row][col] = 0  
+def print_board(board):
+    for row in board:
+        print(' '.join('Q' if cell else '.' for cell in row))
+if __name__ == "__main__":
+    board_size = 4
+    chessboard = [[0] * board_size for _ in range(board_size)]
+    if solve_n_queens(chessboard, 0):
+        print("Solution found:")
+        print_board(chessboard)
+    else:
+        print("No solution found.")
 
