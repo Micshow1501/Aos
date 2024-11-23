@@ -1,27 +1,47 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-int main() 
-{
-	int file_descriptor;
-	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // File permissions
-	// Open file for writing (creating if it doesn't exist)
-	file_descriptor = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, mode);
-	if (file_descriptor < 0) 
-	{
-		perror("Error opening file");
-		return 1;
-	}
-	// Redirect standard output to the file
-	if (dup2(file_descriptor, STDOUT_FILENO) == -1) 
-	{
-		perror("Error redirecting output");
-		return 1;
-	}
-	// Close the file descriptor
-	close(file_descriptor);
-	// Printing to stdout (redirected to file)
-	printf("This output is redirected to a file using dup and open system calls.\n");
-	return 0;
-}
+
+class WaterJugProblem:
+    def __init__(self, jug1_capacity, jug2_capacity, target):
+        self.jug1_capacity = jug1_capacity
+        self.jug2_capacity = jug2_capacity
+        self.target = target
+        self.visited_states = set()
+    def is_valid_state(self, state):
+        jug1, jug2 = state
+        return 0 <= jug1 <= self.jug1_capacity and 0 <= jug2 <= self.jug2_capacity
+    def is_goal_state(self, state):
+        return state[1] == self.target
+    def get_successors(self, state):
+        jug1, jug2 = state
+        successors = []
+        successors.append((self.jug1_capacity, jug2))
+        successors.append((jug1, self.jug2_capacity))
+        successors.append((0, jug2))
+        successors.append((jug1, 0))
+        pour_to_jug2 = min(jug1, self.jug2_capacity - jug2)
+        successors.append((jug1 - pour_to_jug2, jug2 + pour_to_jug2))
+        pour_to_jug1 = min(jug2, self.jug1_capacity - jug1)
+        successors.append((jug1 + pour_to_jug1, jug2 - pour_to_jug1))
+        return [s for s in successors if self.is_valid_state(s)]
+    def solve(self):
+        initial_state = (0, 0)
+        if not self.is_valid_state(initial_state):
+            print("Invalid initial state.")
+            return None
+        stack = [initial_state]
+        while stack:
+            current_state = stack.pop()
+            if current_state in self.visited_states:
+                continue
+            self.visited_states.add(current_state)
+            if self.is_goal_state(current_state):
+                return current_state
+            successors = self.get_successors(current_state)
+            stack.extend(successors)
+        return None
+if __name__ == "__main__":
+    jug_problem = WaterJugProblem(4, 3, 2)
+    solution = jug_problem.solve()
+    if solution:
+        print(f"Solution found: {solution}")
+    else:
+        print("No solution found.")
