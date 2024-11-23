@@ -1,43 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-int main() 
-{
-	int pipe_fd[2];
-	if (pipe(pipe_fd) == -1) 
-	{
-		perror("Pipe creation failed");
-		exit(EXIT_FAILURE);
-	}
-	pid_t pid = fork();
-	if (pid < 0) 
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{ 
-		// Child process
-		close(pipe_fd[0]); // Close reading end of pipe in child
-		dup2(pipe_fd[1], STDOUT_FILENO); // Redirect stdout to pipe write end
-		// Execute ls -l command
-		execlp("ls", "ls", "-l", NULL);
-		// execlp will not return unless there's an error
-		perror("exec ls -l failed");
-		exit(EXIT_FAILURE);
-	} 
-	else 
-	{ 
-		// Parent process
-		close(pipe_fd[1]); // Close writing end of pipe in parent
-		dup2(pipe_fd[0], STDIN_FILENO); // Redirect stdin to pipe read end
-		// Execute wc -l command
-		execlp("wc", "wc", "-l", NULL);
-		// execlp will not return unless there's an error
-		perror("exec wc -l failed");
-		exit(EXIT_FAILURE);
-	}
-	return 0;
-}
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 5)
+def check_winner(board):
+    for row in board:
+        if all(cell == row[0] for cell in row) and row[0] != ' ':
+            return True
+    for col in range(3):
+        if all(board[row][col] == board[0][col] for row in range(3)) and board[0][col] != ' ':
+            return True
+    if all(board[i][i] == board[0][0] for i in range(3)) and board[0][0] != ' ':
+        return True
+    if all(board[i][2 - i] == board[0][2] for i
+
+
+
