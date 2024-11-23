@@ -1,27 +1,18 @@
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-
-void alarm_handler(int signum) {
-  printf("Alarm is fired!\n");
-}
-
-int main() {
-  int pid = fork();
-
-  if (pid == 0) {
-    // Child process: send SIGALRM after 5 seconds
-    sleep(5);
-    kill(getppid(), SIGALRM);
-    printf("Child process sent SIGALRM to parent\n");
-  } else {
-    // Parent process: catch SIGALRM
-    signal(SIGALRM, alarm_handler);
-    while (1) {
-      printf("Parent process waiting for alarm...\n");
-      sleep(1);
-    }
-  }
-
-  return 0;
-}
+import numpy as np
+def objective_function(x):
+    return -x**2 + 4*x
+def hill_climbing(initial_x, step_size, max_iterations):
+    current_x = initial_x
+    for _ in range(max_iterations):
+        next_x = current_x + step_size
+        if objective_function(next_x) > objective_function(current_x):
+            current_x = next_x
+        else:
+            break
+    return current_x
+#Set initial parameters
+initial_guess = 0.0
+step_size = 0.1
+max_iterations = 100
+result = hill_climbing(initial_guess, step_size, max_iterations)
+print(f"Maximum at x = {result}, f(x) = {objective_function(result)}")
