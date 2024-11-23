@@ -1,26 +1,25 @@
-#include<stdio.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<stdlib.h>
-int main()
-{
-	int pfds[2];
-	char buf[80];
-	if(pipe(pfds)==-1)
-	{
-		perror("pipe failed");
-		exit(1);
-	}
-	if(fork()==0)
-	{
-		close(1);
-		dup(pfds[1]);
-		system("ls -l");
-	}
-	else
-	{
-		printf("parent reading from pipe\n");
-		read(pfds[0],buf,80);
-		printf("%s\n",buf);
-	}
-}
+from itertools import permutations
+def is_valid_assignment(assignment):
+    if any(assignment[word][0] == '0' for word in assignment):
+        return False
+    try:
+        result = int(assignment['TWO']) + int(assignment['TWO']) == int(assignment['FOUR'])
+    except ValueError:
+        return False
+   return result
+def solve_cryptarithmetic():
+    words = ['TWO', 'FOUR']
+    for perm in permutations('0123456789', len(set(''.join(words)))):
+        assignment = {word: ''.join(perm[i] for i in range(len(word))) for word in words}
+        if is_valid_assignment(assignment):
+            return assignment
+    return None
+if __name__ == "__main__":
+    solution = solve_cryptarithmetic()
+    if solution:
+        print("Solution found:")
+        for word, value in solution.items():
+            print(f"{word}: {value}")
+    else:
+        print("No solution found.")
+
