@@ -1,54 +1,31 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-void child_handler(int signum) 
-{
-	if (signum == SIGCHLD) 
-	{
-		printf("Child process has terminated.\n");
-	}
-}
-void alarm_handler(int signum) 
-{
-	if (signum == SIGALRM) 
-	{
-		printf("Child process exceeded time limit. Killing...\n");
-		kill(getpid(), SIGKILL); // Kill the current process
-	}
+graph = {
+    1: [2, 3],
+    2: [4, 5],
+    3: [6, 7],
+    4: [],
+    5: [],
+    6: [],
+    7: []
 }
 
-int main(int argc, char *argv[]) 
-{
-	if (argc < 2) 
-	{
-		printf("Usage: %s <command>\n", argv[0]);
-		return 1;
-	}
-	signal(SIGCHLD, child_handler);
-	signal(SIGALRM, alarm_handler);
-	pid_t pid = fork();
-	if (pid < 0) 
-	{
-		perror("Fork failed");
-		exit(EXIT_FAILURE);
-	} 
-	else if (pid == 0) 
-	{ 
-		// Child process
-		execvp(argv[1], &argv[1]); // Execute the command
-		perror("Execution failed");
-		exit(EXIT_FAILURE);
-	} 
-	else 
-	{ 
-		// Parent process
-		alarm(5); // Set alarm for 5 seconds
-		// Wait for the child process to terminate
-		wait(NULL);
-		alarm(0); // Cancel the alarm
-	}
-	return 0;
-}
+def dfs(current, goal, visited, path):
+    visited.add(current)
+    path.append(current)
+
+    if current == goal:
+        return path
+
+   for neighbor in graph[current]:
+        if neighbor not in visited:
+            new_path = dfs(neighbor, goal, visited, path)
+            if new_path:
+                return new_path
+    path.pop()
+initial_node = 2
+goal_node = 7
+visited_nodes = set()
+result_path = dfs(initial_node, goal_node, visited_nodes, [])
+if result_path:
+    print(f"DFS Path from {initial_node} to {goal_node}: {result_path}")
+else:
+    print(f"No path found from {initial_node} to {goal_node}")
