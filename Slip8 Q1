@@ -1,27 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-int main() 
-{
-	int file_descriptor;
-	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // File permissions
-	// Open file for writing (creating if it doesn't exist)
-	file_descriptor = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, mode);
-	if (file_descriptor < 0) 
-	{
-		perror("Error opening file");
-		return 1;
-	}
-	// Redirect standard output to the file
-	if (dup2(file_descriptor, STDOUT_FILENO) == -1) 
-	{
-		perror("Error redirecting output");
-		return 1;
-	}
-	// Close the file descriptor
-	close(file_descriptor);
-	// Printing to stdout (redirected to file)
-	printf("This output is redirected to a file using dup and open system calls.\n");
-	return 0;
-}
+def count_upper_lower(string):
+    upper_count = 0
+    lower_count = 0
+    for char in string:
+        if char.isupper():
+            upper_count += 1
+        elif char.islower():
+            lower_count += 1
+    return upper_count, lower_count
+def main():
+    user_input = input("Enter a string: ")
+    upper_count, lower_count = count_upper_lower(user_input)
+    print("Number of uppercase alphabets:", upper_count)
+    print("Number of lowercase alphabets:", lower_count)
+if __name__ == "__main__":
+    main()
